@@ -71,8 +71,7 @@ function drawGame(){
   drawStatus(enemy);
 }
 
-//
-//
+
 //----setup/draw 他 ------------------------------------------------------
 
 function setup() {
