@@ -41,6 +41,31 @@ function drawEnemy(enemy){
   circle(enemy.x, enemy.y, 50);
 }
 
+// ボタンエンティティ
+function createButtons(button_name, button_x, button_y){
+  return{
+    name: button_name,
+    x: button_x,
+    y: button_y
+  }
+}
+
+function drawButton(button){
+  rect(button.x, button.y, 200, 80);
+  textSize(24);
+  textAlign(CENTER, CENTER);
+  text(button.name, button.x, button.y);
+  if(mouseIsPressed){
+    if(mouseX >= 80 && mouseX <= 280 && mouseY >= 460 && mouseY <=540){
+      kindsOfButton = button.name;
+      ButtonIsPushed();
+    }
+  }
+}
+
+// ボタンのステータス　ボタンの名称が入り、攻撃のエフェクトと紐付けられる
+let kindsOfButton;
+
 
 //----ゲーム全体に関わる部分 ----------------------------------------------
 /** プレイヤーエンティティ */
@@ -50,7 +75,7 @@ let player;
 let enemy;
 
 /** ボタンエンティティ */
-let button;
+let micro_button;
 
 /** ステータスの描画 */
 
@@ -67,10 +92,19 @@ function drawGame(){
   drawplayer(player);
   drawEnemy(enemy);
 
+// ボタンの描画
+  drawButton(micro_button);
+
   drawStatus(player);
   drawStatus(enemy);
 }
 
+/** ボタンが押されたら */
+function ButtonIsPushed(){
+  if(kindsOfButton == "ミクロ経済学"){
+    background(0);
+  }
+}
 
 //----setup/draw 他 ------------------------------------------------------
 
@@ -83,17 +117,10 @@ function setup() {
   player = createPlayer();
 
   // エネミーの生成
-  enemy = createEnemy();
+  enemy = createEnemy();  
 
   // ボタンの生成
-  let button = createButton("ミクロ経済学");
-  button.position(80, 500);
-  button.mousePressed(changeBG); // ボタンを押すとchangeBGを呼び出す
-  button.style("width", "200px");
-  button.style("height", "80px");
-  button.style("font-size", "24px");
-  
-
+  micro_button = createButtons("ミクロ経済学", 180, 500);
 }
 
 function draw() {
