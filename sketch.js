@@ -57,15 +57,48 @@ function drawButton(button){
   text(button.name, button.x, button.y);
   if(mouseIsPressed){
     if(mouseX >= 80 && mouseX <= 280 && mouseY >= 460 && mouseY <=540){
-      kindsOfButton = button.name;
+      button_status = button.name;
       ButtonIsPushed();
     }
   }
 }
 
-// ボタンのステータス　ボタンの名称が入り、攻撃のエフェクトと紐付けられる
-let kindsOfButton;
+// 攻撃エフェクトエンティティ
+function createAttack(){
+  return {
+    x: player.x,
+    y: player.y,
+    vx: 10
+  }
+}
 
+function drawAttack(entity){
+  if(enemy.hp !== 0){
+    if(game_status == "attack"){
+      if(entity.x > enemy.x){
+        game_status = "select";
+      } else if(entity.x <= enemy.x) {
+        if(attacks == micro_attack){
+          square(entity.x, entity.y, 50);
+        }
+      }
+    }
+  } else {
+    game_status = "select";
+  }
+}
+
+// 攻撃エフェクトエンティティの位置の更新
+function updateAttackPosition(entity){
+  if(game_status == "attack"){
+    entity.x += entity.vx;
+  }
+}
+
+// 攻撃エフェクトエンティティの位置の初期化
+function resetAttackPosition(entity){
+  entity.x = player.x;
+}
 
 //----ゲーム全体に関わる部分 ----------------------------------------------
 /** プレイヤーエンティティ */
@@ -77,14 +110,56 @@ let enemy;
 /** ボタンエンティティ */
 let micro_button;
 
-/** ステータスの描画 */
+// ボタンのステータス
+let button_status;
+// "ミクロ経済学"などが入り、攻撃エフェクトと関連している
 
+// 攻撃エフェクト
+let attacks;
+// micro_attack などが入る
+// 後々、攻撃が複数になった場合、攻撃名のリストになるかも？
+
+// ミクロ経済学攻撃エフェクト
+let micro_attack;
+
+// ゲーム状態
+let game_status;
+//今のところ "attack" 攻撃中 か "select" 選択中 が入る
+
+
+/** ステータスの描画 */
 function drawStatus(entity) {
   textSize(20);
   textAlign(CENTER, CENTER);
   text('HP:' + entity.hp, entity.x, 150);
   text('タイプ:' + entity.type, entity.x, 170);
   text('社会Lv:' + entity.lv_s + ' ' + '情報Lv:' + entity.lv_i + ' ' + '人間Lv:' + entity.lv_h, entity.x, 210);
+
+  text(micro_attack.x + "  " + enemy.x, 200, 400);
+  text(game_status, 200, 425);
+}
+
+/** ゲームの初期化 */
+function resetGame(){
+  // プレイヤーの生成
+  player = createPlayer();
+
+  // エネミーの生成
+  enemy = createEnemy();
+
+  // ボタンの生成
+  micro_button = createButtons("ミクロ経済学", 180, 500);
+
+  // ミクロ経済学攻撃エフェクトの生成
+  micro_attack = createAttack();
+
+  // ゲーム状態の初期化
+  game_status = "select";
+}
+
+/** ゲームの更新*/
+function updateGame(){
+  updateAttackPosition(micro_attack);
 }
 
 /** ゲームの描画 */
@@ -95,14 +170,27 @@ function drawGame(){
 // ボタンの描画
   drawButton(micro_button);
 
+// ステータスの描画
   drawStatus(player);
   drawStatus(enemy);
+
+// 攻撃エフェクトの描画
+  drawAttack(micro_attack);
 }
 
 /** ボタンが押されたら */
 function ButtonIsPushed(){
-  if(kindsOfButton == "ミクロ経済学"){
-    background(0);
+  if(button_status == "ミクロ経済学"){
+    attacks = micro_attack;
+  }
+}
+
+// HPの更新
+function updateHp(){
+  if(enemy.hp > 0) {
+    enemy.hp -= 10;
+  } else {
+    enemy.hp = 0;
   }
 }
 
@@ -113,23 +201,22 @@ function setup() {
   rectMode(CENTER); //四角形の基準点を中心に変更
   background(220);
 
-  // プレイヤーの生成
-  player = createPlayer();
-
-  // エネミーの生成
-  enemy = createEnemy();  
-
-  // ボタンの生成
-  micro_button = createButtons("ミクロ経済学", 180, 500);
+  resetGame();
 }
 
 function draw() {
   background(220);
   drawGame();
+
+  updateGame();
 }
 
 function mousePressed(){
-  //（ここにマウスボタンを押したときの処理が入る）
+  if(mouseX >= 80 && mouseX <= 280 && mouseY >= 460 && mouseY <=540){
+    resetAttackPosition(micro_attack);
+    game_status = "attack";
+    updateHp();
+  }
 }
 
 function changeBG(){
