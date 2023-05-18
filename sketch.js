@@ -60,10 +60,10 @@ function drawButton(button){
       button_status = button.name;
       ButtonIsPushed();
     }
-    if(mouseX >= 300 && mouseX <= 500 && mouseY >= 460 && mouseY <=540){
+    /*if(mouseX >= 300 && mouseX <= 500 && mouseY >= 460 && mouseY <=540){
       button_status = button.name;
       ButtonIsPushed();
-    }
+    }*/
   }
 }
 
@@ -260,7 +260,7 @@ function draw() {
 }
 
 function mousePressed(){
-  if(mouseX >= 80 && mouseX <= 280 && mouseY >= 460 && mouseY <=540){
+  if(game_status == "select" && mouseX >= 80 && mouseX <= 280 && mouseY >= 460 && mouseY <=540){
     resetAttackPosition(micro_attack);
     game_status = "attack";
     updateHp();
