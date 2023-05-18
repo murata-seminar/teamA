@@ -241,6 +241,16 @@ function countHpIsZero(){
   }
 }
 
+//敵の攻撃
+function enemyAttack(){
+  for(let i=0; i<1; i++){
+    if(i==0){
+      player.hp-=enemy.attack;
+    }
+  }
+
+}
+
 //----setup/draw 他 ------------------------------------------------------
 
 function setup() {
@@ -265,6 +275,7 @@ function mousePressed(){
     game_status = "attack";
     updateHp();
     countHpIsZero();
+    enemyAttack();
   }
   /*
   if(mouseX >= 300 && mouseX <= 500 && mouseY >= 460 && mouseY <=540){
