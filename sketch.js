@@ -1,12 +1,7 @@
 //----エンティティ関連の関数 ----------------------------------------------
 
 
-function preload(){
-  img = loadImage('./勇者.png');
-  img2 = loadImage('./緑の開いた本.png');
-  img3 = loadImage('./草原.png');
-  img4 = loadImage('./雷.png')
-}
+
 // プレイヤーエンティティ
 function createPlayer(){
   return {
@@ -56,9 +51,12 @@ function createButtons(button_name, button_x, button_y){
 }
 
 function drawButton(button){
-  rect(button.x, button.y, 200, 80);
+  rectMode(RADIUS);
+  fill(0);
+  rect(button.x, button.y, 70, 30, 20);
   textSize(24);
   textAlign(CENTER, CENTER);
+  fill(220);
   text(button.name, button.x, button.y);
   if(mouseIsPressed){
     if(mouseX >= 80 && mouseX <= 280 && mouseY >= 460 && mouseY <=540){
@@ -123,11 +121,14 @@ let enemy;
 let micro_button;
 //let database_button;
 
-/**画像エンティティ */
+/**画像 */
 let img;
 let img2;
 let img3;
 let img4;
+
+/**音 */
+let soundFile;
 
 // ボタンのステータス
 let button_status;
@@ -153,23 +154,24 @@ let num;
 
 /** ステータスの描画 */
 function drawStatus(entity) {
-  textSize(20);
+  textSize(25);
   textAlign(CENTER, CENTER);
-  text('HP:' + entity.hp, entity.x, 150);
-  text('Type:' + entity.type, entity.x, 170);
-  text('社会Lv:' + entity.lv_s + ' ' + '情報Lv:' + entity.lv_i + ' ' + '人間Lv:' + entity.lv_h, entity.x, 210);
+  fill(0);
+  text('HP:' + entity.hp, entity.x, 200);
+  text('Type:' + entity.type, entity.x, 220);
+  //text('社会Lv:' + entity.lv_s + ' ' + '情報Lv:' + entity.lv_i + ' ' + '人間Lv:' + entity.lv_h, entity.x, 210);
 
   text(micro_attack.x + "  " + enemy.x, 200, 375);
   //text(database_attack.x + "  " + enemy.x, 200, 400);
-  text(game_status, 200, 425);
+  //text(game_status, 200, 425);
 }
 
 /** ウィンドウの描画 */
 function drawWindow(){
   if(game_status == "attack") { 
-    textSize(20);
+    textSize(30);
     textAlign(CENTER, CENTER);
-    
+    fill(0);
     text("Player's " + button_status + ' attack!', 400, 50);
   }
 }
@@ -264,6 +266,14 @@ function enemyAttack(){
 
 //----setup/draw 他 ------------------------------------------------------
 
+function preload(){
+  img = loadImage('./勇者.png');
+  img2 = loadImage('./緑の開いた本.png');
+  img3 = loadImage('./草原.png');
+  img4 = loadImage('./雷.png');
+  soundFile = createAudio('おとぼけダンス.mp3');
+}
+
 function setup() {
   createCanvas(800, 600)
   image(img3, 0, 0, 800, 600); // 800 x 600 ピクセル
@@ -272,6 +282,7 @@ function setup() {
   background(220);
 
   resetGame();
+  soundFile.loop();
 }
 
 function draw() {
