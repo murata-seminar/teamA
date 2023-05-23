@@ -31,7 +31,7 @@ function createEnemy(){
     lv_i: 1,
     lv_h: 2,
     type: "Human",
-    Name: "MicroEconomics",
+    Name: "socialEconomics",
     attack: 10,
     diffence: 10,
     x: 600,
@@ -86,7 +86,7 @@ function drawAttack(entity){
     if(entity.x > enemy.x){
       game_status = "select";
     } else if(entity.x <= enemy.x) {
-      if(attacks == micro_attack){
+      if(attacks == social_attack){
         image(img4,entity.x, entity.y, 50,50);
       }
       /*
@@ -120,7 +120,7 @@ let player;
 let enemy;
 
 /** ボタンエンティティ */
-let micro_button;
+let social_button;
 //let database_button;
 
 /**画像 */
@@ -135,18 +135,15 @@ let soundFile;
 
 // ボタンのステータス
 let button_status;
-// "ミクロ経済学"などが入り、攻撃エフェクトと関連している
+// "社会"などが入り、攻撃エフェクトと関連している
 
 // 攻撃エフェクト
 let attacks;
-// micro_attack などが入る
+// social_attack などが入る
 // 後々、攻撃が複数になった場合、攻撃名のリストになるかも？
 
-// ミクロ経済学攻撃エフェクト
-let micro_attack;
-
-// データベース基礎攻撃エフェクト
-//let database_attack;
+// 社会攻撃エフェクト
+let social_attack;
 
 // ゲーム状態
 let game_status;
@@ -183,7 +180,7 @@ function drawStatus(entity) {
   text('Name:' + entity.Name, entity.x, 220);
   //text('社会Lv:' + entity.lv_s + ' ' + '情報Lv:' + entity.lv_i + ' ' + '人間Lv:' + entity.lv_h, entity.x, 210);
 
-  //text(micro_attack.x + "  " + enemy.x, 200, 375);
+  //text(social_attack.x + "  " + enemy.x, 200, 375);
   //text(database_attack.x + "  " + enemy.x, 200, 400);
   //text(game_status, 200, 425);
 }
@@ -210,11 +207,11 @@ function resetGame(){
   enemy = createEnemy();
 
   // ボタンの生成
-  micro_button = createButtons("Social", 180, 500);
+  social_button = createButtons("Social", 180, 500);
   //database_button = createButtons("データベース基礎", 400, 500);
 
-  // ミクロ経済学攻撃エフェクトの生成
-  micro_attack = createAttack();
+  // 社会攻撃エフェクトの生成
+  social_attack = createAttack();
 
   // データベース基礎攻撃エフェクトの生成
   //database_attack = createAttack();
@@ -228,7 +225,7 @@ function resetGame(){
 
 /** ゲームの更新*/
 function updateGame(){
-  updateAttackPosition(micro_attack);
+  updateAttackPosition(social_attack);
   //updateAttackPosition(database_attack);
 }
 
@@ -242,7 +239,7 @@ function drawGame(){
   drawEnemy(enemy);
 
 // ボタンの描画
-  drawButton(micro_button);
+  drawButton(social_button);
   //drawButton(database_button);
 
 // ステータスの描画
@@ -250,7 +247,7 @@ function drawGame(){
   drawStatus(enemy);
 
 // 攻撃エフェクトの描画
-  drawAttack(micro_attack);
+  drawAttack(social_attack);
 
 // ウィンドウの描画
   drawWindow();
@@ -260,7 +257,7 @@ function drawGame(){
 /** ボタンが押されたら */
 function ButtonIsPushed(){
   if(button_status == "Social"){
-    attacks = micro_attack;
+    attacks = social_attack;
   }
   /*
   if(button_status == "データベース基礎"){
@@ -325,7 +322,7 @@ function draw() {
 
 function mousePressed(){
   if(game_status == "select" && mouseX >= 80 && mouseX <= 280 && mouseY >= 460 && mouseY <=540){
-    resetAttackPosition(micro_attack);
+    resetAttackPosition(social_attack);
     game_status = "attack";
     updateHp();
     countHpIsZero();
