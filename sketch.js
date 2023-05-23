@@ -1,7 +1,12 @@
 //----エンティティ関連の関数 ----------------------------------------------
 
 
-
+function preload(){
+  img = loadImage('./勇者.png');
+  img2 = loadImage('./緑の開いた本.png');
+  img3 = loadImage('./草原.png');
+  img4 = loadImage('./雷.png')
+}
 // プレイヤーエンティティ
 function createPlayer(){
   return {
@@ -9,7 +14,7 @@ function createPlayer(){
     lv_s: 2,
     lv_i: 1,
     lv_h: 1,
-    type: "社会",
+    type: "Social",
     attack: 10,
     diffence: 10,
     x: 200,
@@ -18,7 +23,7 @@ function createPlayer(){
 }
 
 function drawplayer(player){
-  circle(player.x, player.y, 50);
+  image(img,player.x-40, player.y-10,70, 70);
 }
 
 
@@ -29,7 +34,7 @@ function createEnemy(){
     lv_s: 1,
     lv_i: 1,
     lv_h: 2,
-    type: "人間",
+    type: "Human",
     attack: 10,
     diffence: 10,
     x: 600,
@@ -38,7 +43,7 @@ function createEnemy(){
 }
 
 function drawEnemy(enemy){
-  circle(enemy.x, enemy.y, 50);
+  image(img2,enemy.x-30, enemy.y-10, 70, 70);
 }
 
 // ボタンエンティティ
@@ -82,7 +87,7 @@ function drawAttack(entity){
       game_status = "select";
     } else if(entity.x <= enemy.x) {
       if(attacks == micro_attack){
-        square(entity.x, entity.y, 50);
+        image(img4,entity.x, entity.y, 50,50);
       }
       /*
       if(attacks == database_attack){
@@ -118,6 +123,12 @@ let enemy;
 let micro_button;
 //let database_button;
 
+/**画像エンティティ */
+let img;
+let img2;
+let img3;
+let img4;
+
 // ボタンのステータス
 let button_status;
 // "ミクロ経済学"などが入り、攻撃エフェクトと関連している
@@ -145,7 +156,7 @@ function drawStatus(entity) {
   textSize(20);
   textAlign(CENTER, CENTER);
   text('HP:' + entity.hp, entity.x, 150);
-  text('タイプ:' + entity.type, entity.x, 170);
+  text('Type:' + entity.type, entity.x, 170);
   text('社会Lv:' + entity.lv_s + ' ' + '情報Lv:' + entity.lv_i + ' ' + '人間Lv:' + entity.lv_h, entity.x, 210);
 
   text(micro_attack.x + "  " + enemy.x, 200, 375);
@@ -159,7 +170,7 @@ function drawWindow(){
     textSize(20);
     textAlign(CENTER, CENTER);
     
-    text('プレイヤーの' + button_status + 'こうげき!', 400, 50);
+    text("Player's " + button_status + ' attack!', 400, 50);
   }
 }
 
@@ -172,7 +183,7 @@ function resetGame(){
   enemy = createEnemy();
 
   // ボタンの生成
-  micro_button = createButtons("ミクロ経済学", 180, 500);
+  micro_button = createButtons("Social", 180, 500);
   //database_button = createButtons("データベース基礎", 400, 500);
 
   // ミクロ経済学攻撃エフェクトの生成
@@ -216,7 +227,7 @@ function drawGame(){
 
 /** ボタンが押されたら */
 function ButtonIsPushed(){
-  if(button_status == "ミクロ経済学"){
+  if(button_status == "Social"){
     attacks = micro_attack;
   }
   /*
@@ -254,7 +265,9 @@ function enemyAttack(){
 //----setup/draw 他 ------------------------------------------------------
 
 function setup() {
-  createCanvas(800, 600); // 800 x 600 ピクセル
+  createCanvas(800, 600)
+  image(img3, 0, 0, 800, 600); // 800 x 600 ピクセル
+  textFont("VT323");
   rectMode(CENTER); //四角形の基準点を中心に変更
   background(220);
 
@@ -262,9 +275,7 @@ function setup() {
 }
 
 function draw() {
-  background(220);
-  
-
+  image(img3, 0, 0, 800, 600);
   updateGame();
   drawGame();
 }
