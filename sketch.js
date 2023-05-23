@@ -128,6 +128,7 @@ let img;
 let img2;
 let img3;
 let img4;
+let img5;
 
 /**音 */
 let soundFile;
@@ -159,15 +160,15 @@ let startButton;
 
 /**タイトル画面の初期化 */
 function resetTitleScreen(){
-  startButton = createButtons("Start", width / 2, height / 2);
+  startButton = createButtons("Start", width / 2 , height / 2 + 100);
 }
 
 /**タイトル画面の描画 */
 function drawTitleScreen(){
-  textSize(80);
+  textSize(100);
   textAlign(CENTER, CENTER);
   fill(0);
-  text("Muramon", width / 2, height / 2 - 100);
+  image(img5, width / 2 -250, height / 2 - 150, 500, 200);
 
   //スタートボタンの描画
   drawButton(startButton);
@@ -300,6 +301,7 @@ function preload(){
   img2 = loadImage('./緑の開いた本.png');
   img3 = loadImage('./草原.png');
   img4 = loadImage('./雷.png');
+  img5 = loadImage('./muramon.png');
   soundFile = createAudio('おとぼけダンス.mp3');
 }
 
