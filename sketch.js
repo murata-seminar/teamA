@@ -10,6 +10,7 @@ function createPlayer(){
     lv_i: 1,
     lv_h: 1,
     type: "Social",
+    Name: "Player",
     attack: 10,
     diffence: 10,
     x: 200,
@@ -18,7 +19,7 @@ function createPlayer(){
 }
 
 function drawplayer(player){
-  image(img,player.x-40, player.y-10,70, 70);
+  image(img,player.x - 40, player.y - 10, 80, 80);
 }
 
 
@@ -30,6 +31,7 @@ function createEnemy(){
     lv_i: 1,
     lv_h: 2,
     type: "Human",
+    Name: "MicroEconomics",
     attack: 10,
     diffence: 10,
     x: 600,
@@ -38,7 +40,7 @@ function createEnemy(){
 }
 
 function drawEnemy(enemy){
-  image(img2,enemy.x-30, enemy.y-10, 70, 70);
+  image(img2,enemy.x-30, enemy.y-10, 80, 80);
 }
 
 // ボタンエンティティ
@@ -54,7 +56,7 @@ function drawButton(button){
   rectMode(RADIUS);
   fill(0);
   rect(button.x, button.y, 70, 30, 20);
-  textSize(24);
+  textSize(30);
   textAlign(CENTER, CENTER);
   fill(220);
   text(button.name, button.x, button.y);
@@ -152,16 +154,35 @@ let game_status;
 // マウスが押された回数
 let num;
 
+//タイトル画面のボタンエンティティ
+let startButton;
+
+/**タイトル画面の初期化 */
+function resetTitleScreen(){
+  startButton = createButtons("Start", width / 2, height / 2);
+}
+
+/**タイトル画面の描画 */
+function drawTitleScreen(){
+  textSize(80);
+  textAlign(CENTER, CENTER);
+  fill(0);
+  text("Muramon", width / 2, height / 2 - 100);
+
+  //スタートボタンの描画
+  drawButton(startButton);
+}
+
 /** ステータスの描画 */
 function drawStatus(entity) {
   textSize(25);
   textAlign(CENTER, CENTER);
   fill(0);
   text('HP:' + entity.hp, entity.x, 200);
-  text('Type:' + entity.type, entity.x, 220);
+  text('Name:' + entity.Name, entity.x, 220);
   //text('社会Lv:' + entity.lv_s + ' ' + '情報Lv:' + entity.lv_i + ' ' + '人間Lv:' + entity.lv_h, entity.x, 210);
 
-  text(micro_attack.x + "  " + enemy.x, 200, 375);
+  //text(micro_attack.x + "  " + enemy.x, 200, 375);
   //text(database_attack.x + "  " + enemy.x, 200, 400);
   //text(game_status, 200, 425);
 }
@@ -178,6 +199,9 @@ function drawWindow(){
 
 /** ゲームの初期化 */
 function resetGame(){
+  //ゲームの初期化時にタイトル画面も初期化する
+  resetTitleScreen();
+
   // プレイヤーの生成
   player = createPlayer();
 
@@ -195,7 +219,7 @@ function resetGame(){
   //database_attack = createAttack();
 
   // ゲーム状態の初期化
-  game_status = "select";
+  game_status = "title";
 
   //マウスが押された回数numの初期化
   num = 0;
@@ -209,6 +233,10 @@ function updateGame(){
 
 /** ゲームの描画 */
 function drawGame(){
+  if(game_status === "title"){
+    drawTitleScreen();
+  }
+  else{
   drawplayer(player);
   drawEnemy(enemy);
 
@@ -225,6 +253,7 @@ function drawGame(){
 
 // ウィンドウの描画
   drawWindow();
+  }
 }
 
 /** ボタンが押されたら */
@@ -281,6 +310,7 @@ function setup() {
   rectMode(CENTER); //四角形の基準点を中心に変更
   background(220);
 
+  game_status = "title";
   resetGame();
   soundFile.loop();
 }
@@ -298,6 +328,19 @@ function mousePressed(){
     updateHp();
     countHpIsZero();
     enemyAttack();
+  }
+
+  if (game_status === "title") {
+    // スタートボタンが押された場合
+    if (
+      mouseX >= startButton.x - 35 &&
+      mouseX <= startButton.x + 35 &&
+      mouseY >= startButton.y - 15 &&
+      mouseY <= startButton.y + 15
+    ) {
+      game_status = "select";
+      // 以降のゲームの進行コード...
+    }
   }
   /*
   if(mouseX >= 300 && mouseX <= 500 && mouseY >= 460 && mouseY <=540){
