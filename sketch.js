@@ -55,7 +55,7 @@ function createButtons(button_name, button_x, button_y, button_w, button_h){
 }
 
 function drawButton(button){
-  rectMode(RADIUS);
+  // rectMode(RADIUS);
   fill(0);
   rect(button.x, button.y, button.w, button.h, 20);
   textSize(30);
@@ -74,7 +74,7 @@ function createAttack(){
 }
 
 function drawAttack(entity){
-  if(num <= 1 && game_status == "attack"){
+  if(num <= 1 && game_status == "attack" && button_status != "nothing"){
     if(entity.x > enemy.x){
       game_status = "select";
       // game_status = "gameover";
@@ -87,6 +87,7 @@ function drawAttack(entity){
     }
   } else {
     game_status = "select";
+    button_status = "nothing";
   }
 }
 
@@ -170,7 +171,7 @@ let num;
 
 /**タイトル画面の初期化 */
 function resetTitleScreen(){
-  start_button = createButtons("Start", width / 2 , height / 2 + 100, 70, 30);
+  start_button = createButtons("Start", width / 2 , height / 2 + 100, 140, 60);
 }
 
 /**タイトル画面の描画 */
@@ -207,18 +208,36 @@ function drawStatus(entity) {
   //text("社会Lv:" + entity.lv_s + " " + "情報Lv:" + entity.lv_i + " " + "人間Lv:" + entity.lv_h, entity.x, 210);
 
 
-  // 以下、攻撃エフェクト確認用
+  // 以下、確認用
   // text("社 " + social_attack.x + "  " + enemy.x, 200, 375);
   // text("情 " + informatic_attack.x + "  " + enemy.x, 200, 400);
   // text(game_status, 200, 425);
+  /* let minS;
+  minS = social_button.y - (social_button.h / 2);
+  let maxS;
+  maxS = social_button.y + (social_button.h / 2);
+  let yhS;
+  yhS = social_button.y + social_button.h;
+  textSize(15);
+  text(minS + " <= social <= " + maxS, social_button.x, yhS - 15);
+  text("x: " + social_button.x + "  y: " + social_button.y, social_button.x, yhS + 5);
+  text("w: " + social_button.w + "  h: " + social_button.h, social_button.x, yhS + 25);
+  */
 }
 
 /** ウィンドウの描画 */
 function drawWindow(){
   if(game_status == "attack") { 
-    textSize(30);
-    fill(0);
-    text("Player's " + button_status + " attack!", 400, 50);
+    if(button_status != "nothing"){
+      textSize(30);
+      fill(0);
+      text("Player's " + button_status + " attack!", 400, 50);
+    } else {
+      fill(0);
+      noStroke();
+      textSize(20);
+      text("Select your attack", 400, 50);
+    }
   } else if(game_status == "eAttack") {
     game_status = "eAttack";
     fill(0);
@@ -248,8 +267,8 @@ function resetGame(){
   enemy = createEnemy();
 
   // ボタンの生成
-  social_button = createButtons("Social", 180, 500, 70, 30);
-  informatic_button = createButtons("Informatic", 400, 500, 100, 30);
+  social_button = createButtons("Social", 180, 500, 140, 60);
+  informatic_button = createButtons("Informatic", 400, 500, 200, 60);
 
   // 社会攻撃エフェクトの生成
   social_attack = createAttack();
@@ -369,35 +388,37 @@ function mousePressed(){
     if(
       mouseY >= 500 - (30 / 2) &&
       mouseY <= 500 + (30 / 2)){
-        if( // 社会ボタンが押されたら
-        mouseX >= social_button.x - (social_button.w / 2) &&
-        mouseX <= social_button.x + (social_button.w / 2) 
+        if(
+        mouseX >= social_button.x - (social_button.w / 2) && mouseX <= social_button.x + (social_button.w / 2) 
         ){
+          // 社会ボタンが押されたら
           button_status = "Social";
           attacks = social_attack;
-        } else if( // 情報ボタンが押されたら
-        mouseX >= informatic_button.x - (informatic_button.w / 2) &&
-        mouseX <= informatic_button.x + (informatic_button.w / 2)
+          updateHp();
+        } else if( 
+        mouseX >= informatic_button.x - (informatic_button.w / 2) && mouseX <= informatic_button.x + (informatic_button.w / 2)
         ){
+          // 情報ボタンが押されたら
           button_status = "Informatic";
           attacks = informatic_attack;
-        } 
-      }
-
-    game_status = "attack";
-    updateHp();
-    countHpIsZero();
+          updateHp();
+        } else {
+          button_status = "nothing";
+        }
+      game_status = "attack";
+      countHpIsZero();
+    }
   }
 
   if (game_status === "title") {
-    if( // スタートボタンが押されたら
+    if(
       mouseX >= start_button.x - (start_button.w / 2) &&
       mouseX <= start_button.x + (start_button.w / 2) &&
       mouseY >= start_button.y - (start_button.h / 2) &&
       mouseY <= start_button.y + (start_button.h / 2)
     ){
+      // スタートボタンが押されたら
       game_status = "select";
-      // 以降のゲームの進行コード...
     }
   }
 
