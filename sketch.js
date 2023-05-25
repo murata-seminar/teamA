@@ -79,7 +79,6 @@ function drawAttack(entity){
       updateHp();
       game_status = "eAttack";
       //background(255, 0, 0);
-      // game_status = "gameover";
     } else if(entity.x <= enemy.x) {
       if(attacks == social_attack){
         image(img4, entity.x, entity.y, 50, 50);
@@ -89,11 +88,13 @@ function drawAttack(entity){
         image(img7, entity.x, entity.y, 50, 50);
       }
     }
-  } else {
+  } else if (game_status == "eAttack") {
+    updatePlayerHp();
     game_status = "select";
     button_status = "nothing";
   }
 }
+
 
 // 攻撃エフェクトエンティティの位置の更新
 function updateAttackPosition(entity){
@@ -140,11 +141,14 @@ let img3; // 草原
 let img4; // 雷
 let img5; // muramon
 let img6; //火
-let img7; //青い火
+let img7; //氷
 
 /**音 */
 let soundFile; // おとぼけダンス.mp3
 let soundFile2; //選択音.mp3
+let soundFile3;//炎の音.mp3
+let soundFile4;//雷の音.mp3
+let soundFile5;//氷の音.mp3
 
 
 // ボタンのステータス
@@ -179,16 +183,19 @@ let enemy_type;
 // 敵の名前
 let enemy_name;
 
-// 敵へのダメージ量
+// プレイヤーの敵へのダメージ量
 let player_attack_power;
+
+// 敵のプレイヤーへのダメージ量
+let enemy_attack_power;
 
 // タイプのリスト
 const types = ["Social", "Informatic", "Human"];
 
 // タイプごとの敵の名前リスト
-const social_enemy_names =  ["micro economics", "securities market"];
-const informatic_enemy_names =  ["database basic", "programming basic"];
-const human_enemy_names = ["cognitive psycology", "media theory"];
+const social_enemy_names =  ["micro economics", "securities market", "economic mathmatics"];
+const informatic_enemy_names =  ["basic database", "basic programming", "software engineering"];
+const human_enemy_names = ["cognitive psycology", "media theory", "workshop design"];
 
 
 
@@ -211,7 +218,7 @@ function drawTitleScreen(){
 
 
 /** ゲームオーバー画面の描画 */
-/* function drawGameoverScreen() {
+function drawGameoverScreen() {
   background(0, 192);  // 透明度 192 の黒
   fill(255);
   strokeWeight(5);
@@ -221,7 +228,19 @@ function drawTitleScreen(){
   textSize(25);
   noStroke();
   text("Click to retry", width / 2, height / 2 + 100);  // 画面中央にテキスト表示
-}*/
+}
+
+function drawClearScreen() {
+  background(0, 192);  // 透明度 192 の黒
+  fill(255);
+  strokeWeight(5);
+  stroke(0, 100, 250);
+  textSize(64);
+  text("You Win!", width / 2, height / 2);  // 画面中央にテキスト表示
+  textSize(25);
+  noStroke();
+  text("Click to retry!", width / 2, height / 2 + 100);  // 画面中央にテキスト表示
+}
 
 
 /** ステータスの描画 */
@@ -329,25 +348,24 @@ function updateGame(){
   updateAttackPosition(informatic_attack);
   updateAttackPosition(human_attack);
 
-  // プレイヤーのHPを減らす
-  if(game_status == "eAttack"){
-    updatePlayerHp();
-  }
 
   // プレイヤーが死んでいたらゲームオーバー状態にする
-  // if (player.hp==0) game_status = "gameover";
+  if (player.hp==0) game_status = "gameover";
+
+  // エネミーが死んでいたらゲームオーバー状態にする
+  if (enemy.hp==0) game_status = "clear";
 }
 
 /** ゲームの描画 */
 function drawGame(){
   if(game_status === "title"){
     drawTitleScreen();
-  /* } else if (game_status === "gameover"){
+  } else if (game_status === "gameover"){
     drawGameoverScreen();
-    return; */
-  
-  
-
+    return;
+  } else if (game_status === "clear"){
+    drawClearScreen();
+    return;
   } else {
   drawplayer(player);
   drawEnemy(enemy);
@@ -401,10 +419,17 @@ function countHpIsZero(){
 
 // プレイヤーのHPの更新
 function updatePlayerHp(){
+  enemy_attack_power = Math.floor(Math.random() * 15 + 1);
   //if(game_status == "eAttack"){
     for(let i=0; i<1; i++){
-      if(i==0){
-        player.hp-=enemy.attack;
+      if(i==0 && player.hp > 0){
+        if(player.hp <= enemy_attack_power){
+          player.hp = 0;
+        } else {
+          player.hp -= enemy_attack_power;
+        }
+      } else if (player.hp <= 0){
+        player.hp == 0;
       }
     }
   //}
@@ -419,9 +444,12 @@ function preload(){
   img4 = loadImage("./雷.png");
   img5 = loadImage("./muramon.png");
   img6 = loadImage("./火.png");
-  img7 = loadImage("./青い火.png");
+  img7 = loadImage("./氷.png");
   soundFile = createAudio("おとぼけダンス.mp3");
   soundFile2 = createAudio("選択音.mp3");
+  soundFile3 = createAudio("炎攻撃.mp3");
+  soundFile4 = createAudio("雷攻撃.mp3");
+  soundFile5 = createAudio("氷攻撃.mp3");
 }
 
 function setup() {
@@ -460,7 +488,7 @@ function mousePressed(){
           button_status = "Social";
           attacks = social_attack;
           //updateHp();
-          if(enemy.hp != 0) soundFile2.play();  //選択音
+          if(enemy.hp != 0) soundFile4.play();  //雷の音
         } else if( 
         mouseX >= informatic_button.x - (informatic_button.w / 2) && mouseX <= informatic_button.x + (informatic_button.w / 2)
         ){
@@ -468,7 +496,7 @@ function mousePressed(){
           button_status = "Informatic";
           attacks = informatic_attack;
           //updateHp();
-          if(enemy.hp != 0) soundFile2.play();  //選択音
+          if(enemy.hp != 0) soundFile3.play();  //炎の音
         } else if(
           mouseX >= human_button.x - (human_button.w / 2) && mouseX <= human_button.x + (human_button.w / 2)
         ){
@@ -476,7 +504,7 @@ function mousePressed(){
           button_status = "Human";
           attacks = human_attack;
           //updateHp();
-          if(enemy.hp != 0) soundFile2.play();  //選択音
+          if(enemy.hp != 0) soundFile5.play();  //選択音
         } else {
           button_status = "nothing";
         }
@@ -507,10 +535,13 @@ function mousePressed(){
       game_status = "howtoplay";
     }
   }
-  
 
-  /* if(game_status == "gameover"){
+  if(game_status == "gameover"){
     // ゲームオーバー状態ならリセット
     resetGame();
-  } */
+  }
+  if(game_status == "clear"){
+    // ゲームオーバー状態ならリセット
+    resetGame();
+  }
 }
