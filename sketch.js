@@ -23,14 +23,14 @@ function drawplayer(player){
 
 
 // エネミーエンティティ
-function createEnemy(){
+function createEnemy(enemy_name, enemy_type){
   return {
     hp: 100,
     lv_s: 1,
     lv_i: 1,
     lv_h: 2,
-    type: "Human",
-    Name: "Social Economics",
+    type: enemy_type,
+    Name: enemy_name,
     attack: 10,
     diffence: 10,
     x: 600,
@@ -76,13 +76,17 @@ function createAttack(){
 function drawAttack(entity){
   if(num <= 1 && game_status == "attack" && button_status != "nothing"){
     if(entity.x > enemy.x){
-      game_status = "select";
+      updateHp();
+      game_status = "eAttack";
+      //background(255, 0, 0);
       // game_status = "gameover";
     } else if(entity.x <= enemy.x) {
       if(attacks == social_attack){
         image(img4, entity.x, entity.y, 50, 50);
       } else if(attacks == informatic_attack){
-        image(img4, entity.x, entity.y, 75, 75);
+        image(img6, entity.x, entity.y, 50, 50);
+      } else if(attacks == human_attack){
+        image(img7, entity.x, entity.y, 50, 50);
       }
     }
   } else {
@@ -123,7 +127,7 @@ let social_button;
 // 情報ボタン
 let informatic_button;
 // 人間ボタン
-// let human_button;
+let human_button;
 
 //タイトル画面のスタートボタン
 let start_button;
@@ -135,10 +139,12 @@ let img2; // 緑の開いた本
 let img3; // 草原
 let img4; // 雷
 let img5; // muramon
-
+let img6; //火
+let img7; //青い火
 
 /**音 */
 let soundFile; // おとぼけダンス.mp3
+let soundFile2; //選択音.mp3
 
 
 // ボタンのステータス
@@ -155,7 +161,6 @@ let social_attack; // 社会攻撃エフェクト
 let informatic_attack; // 情報攻撃エフェクト
 let human_attack; // 人間攻撃エフェクト
 
-
 // ゲーム状態
 let game_status;
 /**
@@ -168,10 +173,29 @@ let game_status;
 // マウスが押された回数
 let num;
 
+// 敵のタイプ
+let enemy_type;
+
+// 敵の名前
+let enemy_name;
+
+// 敵へのダメージ量
+let player_attack_power;
+
+// タイプのリスト
+const types = ["Social", "Informatic", "Human"];
+
+// タイプごとの敵の名前リスト
+const social_enemy_names =  ["micro economics", "securities market"];
+const informatic_enemy_names =  ["database basic", "programming basic"];
+const human_enemy_names = ["cognitive psycology", "media theory"];
+
+
 
 /**タイトル画面の初期化 */
 function resetTitleScreen(){
   start_button = createButtons("Start", width / 2 , height / 2 + 100, 140, 60);
+  Howtoplay_button = createButtons("How to play",  + width / 2 , height / 2 + 200, 140, 60);
 }
 
 /**タイトル画面の描画 */
@@ -182,6 +206,7 @@ function drawTitleScreen(){
 
   //スタートボタンの描画
   drawButton(start_button);
+  drawButton(Howtoplay_button);
 }
 
 
@@ -205,6 +230,7 @@ function drawStatus(entity) {
   fill(0);
   text("HP:" + entity.hp, entity.x, 200);
   text(entity.Name, entity.x, 230);
+  text(entity.type, entity.x, 260); // ←デバッグ用　最終的には消す
   //text("社会Lv:" + entity.lv_s + " " + "情報Lv:" + entity.lv_i + " " + "人間Lv:" + entity.lv_h, entity.x, 210);
 
 
@@ -239,11 +265,10 @@ function drawWindow(){
       text("Select your attack", 400, 50);
     }
   } else if(game_status == "eAttack") {
-    game_status = "eAttack";
     fill(0);
     noStroke();
     textSize(20);
-    text("Enemy's attack! Player recieved " + enemy.attack + " damege!", 400, 50);
+    text("Enemy's attack! Player recieved " + enemy.attack + " damage!", 400, 50);
   } else if (game_status == "select"){
     fill(0);
     noStroke();
@@ -251,6 +276,9 @@ function drawWindow(){
     text("Select your attack", 400, 50);
   }
 }
+
+/** 敵の種類をランダム抽出 */
+// (あとで)
 
 /** ゲームの初期化 */
 function resetGame(){
@@ -263,18 +291,33 @@ function resetGame(){
   // プレイヤーの生成
   player = createPlayer();
 
-  // エネミーの生成
-  enemy = createEnemy();
+  // エネミーのタイプの決定
+  enemy_type = types[Math.floor(Math.random()*types.length)];
+
+  // エネミーの名前の決定
+  if(enemy_type === "Social") enemy_name = social_enemy_names[Math.floor(Math.random()*social_enemy_names.length)];
+  if(enemy_type === "Informatic") enemy_name = informatic_enemy_names[Math.floor(Math.random()*informatic_enemy_names.length)];
+  if(enemy_type === "Human") enemy_name = human_enemy_names[Math.floor(Math.random()*human_enemy_names.length)];
+
+  // エネミーの生成 (enemy_name, enemy_typeは  //エネミーのタイプの決定 //エネミーの名前の決定  でランダムに決まる)
+  enemy = createEnemy(enemy_name, enemy_type);
 
   // ボタンの生成
   social_button = createButtons("Social", 180, 500, 140, 60);
   informatic_button = createButtons("Informatic", 400, 500, 200, 60);
+  human_button = createButtons("Human", 620, 500, 140, 60);
 
   // 社会攻撃エフェクトの生成
   social_attack = createAttack();
 
   // 情報攻撃エフェクトの生成
   informatic_attack = createAttack();
+
+  // 人間攻撃エフェクトの生成
+  human_attack = createAttack();
+
+  // 敵の種類の用意
+  // (あとで)
 
   //マウスが押された回数numの初期化
   num = 0;
@@ -284,9 +327,12 @@ function resetGame(){
 function updateGame(){
   updateAttackPosition(social_attack);
   updateAttackPosition(informatic_attack);
+  updateAttackPosition(human_attack);
 
   // プレイヤーのHPを減らす
-  updatePlayerHp();
+  if(game_status == "eAttack"){
+    updatePlayerHp();
+  }
 
   // プレイヤーが死んでいたらゲームオーバー状態にする
   // if (player.hp==0) game_status = "gameover";
@@ -299,6 +345,9 @@ function drawGame(){
   /* } else if (game_status === "gameover"){
     drawGameoverScreen();
     return; */
+  
+  
+
   } else {
   drawplayer(player);
   drawEnemy(enemy);
@@ -306,6 +355,7 @@ function drawGame(){
   // ボタンの描画
   drawButton(social_button);  // 社会ボタン描画
   drawButton(informatic_button);  // 情報ボタン描画
+  drawButton(human_button); // 人間ボタン描画
 
   // ステータスの描画
   drawStatus(player);
@@ -314,6 +364,7 @@ function drawGame(){
   // 攻撃エフェクトの描画
   drawAttack(social_attack); // 社会攻撃エフェクト描画
   drawAttack(informatic_attack); // 情報攻撃エフェクト描画
+  drawAttack(human_attack);  // 人間攻撃エフェクト描画
 
   // エネミーの攻撃エフェクトの描画
   //(あとで)
@@ -326,7 +377,17 @@ function drawGame(){
 // HPの更新
 function updateHp(){
   if(enemy.hp > 0) {
-    enemy.hp -= 10;
+    if(button_status == enemy.type){
+      player_attack_power = Math.floor(Math.random()* 10 + 6);
+    } else {
+      player_attack_power = Math.floor(Math.random()* 4 + 1);
+    }
+
+    if(enemy.hp <= player_attack_power){
+      enemy.hp = 0;
+    } else {
+      enemy.hp -= player_attack_power;
+    }
   } else {
     enemy.hp = 0;
   }
@@ -340,13 +401,13 @@ function countHpIsZero(){
 
 // プレイヤーのHPの更新
 function updatePlayerHp(){
-  if(game_status == "eAttack"){
+  //if(game_status == "eAttack"){
     for(let i=0; i<1; i++){
       if(i==0){
         player.hp-=enemy.attack;
       }
     }
-  }
+  //}
 }
 
 //----setup/draw 他 ------------------------------------------------------
@@ -357,7 +418,10 @@ function preload(){
   img3 = loadImage("./草原.png");
   img4 = loadImage("./雷.png");
   img5 = loadImage("./muramon.png");
+  img6 = loadImage("./火.png");
+  img7 = loadImage("./青い火.png");
   soundFile = createAudio("おとぼけダンス.mp3");
+  soundFile2 = createAudio("選択音.mp3");
 }
 
 function setup() {
@@ -384,7 +448,8 @@ function mousePressed(){
   if(game_status == "select"){
     resetAttackPosition(social_attack);
     resetAttackPosition(informatic_attack);
-    //resetAttackPosition(human_attack);
+    resetAttackPosition(human_attack);
+    
     if(
       mouseY >= 500 - (30 / 2) &&
       mouseY <= 500 + (30 / 2)){
@@ -394,14 +459,24 @@ function mousePressed(){
           // 社会ボタンが押されたら
           button_status = "Social";
           attacks = social_attack;
-          updateHp();
+          //updateHp();
+          if(enemy.hp != 0) soundFile2.play();  //選択音
         } else if( 
         mouseX >= informatic_button.x - (informatic_button.w / 2) && mouseX <= informatic_button.x + (informatic_button.w / 2)
         ){
           // 情報ボタンが押されたら
           button_status = "Informatic";
           attacks = informatic_attack;
-          updateHp();
+          //updateHp();
+          if(enemy.hp != 0) soundFile2.play();  //選択音
+        } else if(
+          mouseX >= human_button.x - (human_button.w / 2) && mouseX <= human_button.x + (human_button.w / 2)
+        ){
+          // 人間ボタンが押されたら
+          button_status = "Human";
+          attacks = human_attack;
+          //updateHp();
+          if(enemy.hp != 0) soundFile2.play();  //選択音
         } else {
           button_status = "nothing";
         }
@@ -419,8 +494,20 @@ function mousePressed(){
     ){
       // スタートボタンが押されたら
       game_status = "select";
+      //選択音
+      soundFile2.play();
+    }
+    if(
+      mouseX >= howtoplay_button.x - (howtplay_button.w / 2) &&
+      mouseX <= howtoplay_button.x + (howtolay_button.w / 2) &&
+      mouseY >= howtoplay_button.y - (howtoplay_button.h / 2) &&
+      mouseY <= howtoplay_button.y + (howtoplay_button.h / 2)
+    ){
+      // 使い方が押されたら
+      game_status = "howtoplay";
     }
   }
+  
 
   /* if(game_status == "gameover"){
     // ゲームオーバー状態ならリセット
