@@ -69,7 +69,7 @@ function createAttack(){
   return {
     x: player.x,
     y: player.y,
-    vx: 10
+    vx: 5
   }
 }
 
@@ -77,8 +77,7 @@ function drawAttack(entity){
   if(num <= 1 && game_status == "attack" && button_status != "nothing"){
     if(entity.x > enemy.x){
       updateHp();
-      game_status = "eAttack";
-      //background(255, 0, 0);
+      game_status = "set";
     } else if(entity.x <= enemy.x) {
       if(attacks == social_attack){
         image(img4, entity.x, entity.y, 50, 50);
@@ -88,13 +87,13 @@ function drawAttack(entity){
         image(img7, entity.x, entity.y, 50, 50);
       }
     }
-  } else if (game_status == "eAttack") {
-    updatePlayerHp();
-    game_status = "select";
-    button_status = "nothing";
+  } else if (game_status == "set") {
+    setTimeout(function(){ //1.5秒後にeAttack
+      game_status = "eAttack";
+    }, 1500);
+    game_status = "standby" //ステータスをstandbyに
   }
 }
-
 
 // 攻撃エフェクトエンティティの位置の更新
 function updateAttackPosition(entity){
@@ -107,6 +106,48 @@ function updateAttackPosition(entity){
 function resetAttackPosition(entity){
   entity.x = player.x;
 }
+
+
+
+//敵の攻撃エフェクトエンティティ
+function createEnemyAttack(){
+  return {
+    x: enemy.x,
+    y: enemy.y,
+    vx: 5
+  }
+}
+
+//敵の攻撃エフェクトの描画
+function drawEnemyAttack(entity){
+  if(game_status == "eAttack"){
+    if(entity.x <= player.x){
+      game_status = "standby2"
+      updatePlayerHp();
+      button_status = "nothing"; //よくわからないけど必要そうだから入れてます
+    } else if(entity.x > player.x) {
+      circle(entity.x, entity.y, 50);
+    }
+  }
+  else if(game_status == "standby2"){
+    setTimeout(function(){ //1.5秒後にselect
+      game_status = "select"; 
+    },1500);
+  }
+}
+
+//敵の攻撃エフェクトエンティティの位置の更新
+function updateEnemyAttackPosition(entity){
+  if(game_status == "eAttack"){
+    entity.x -= entity.vx;
+  }
+}
+
+//敵の攻撃エフェクトエンティティの位置の初期化
+function resetEnemyAttackPosition(entity){
+  entity.x = enemy.x;
+}
+
 
 
 
@@ -164,6 +205,7 @@ let attacks;
 let social_attack; // 社会攻撃エフェクト
 let informatic_attack; // 情報攻撃エフェクト
 let human_attack; // 人間攻撃エフェクト
+let enemy_attack;
 
 // ゲーム状態
 let game_status;
@@ -254,9 +296,11 @@ function drawStatus(entity) {
 
 
   // 以下、確認用
-  // text("社 " + social_attack.x + "  " + enemy.x, 200, 375);
-  // text("情 " + informatic_attack.x + "  " + enemy.x, 200, 400);
-  // text(game_status, 200, 425);
+  text("社 " + social_attack.x + "  " + enemy.x, 200, 375);
+  text("情 " + informatic_attack.x + "  " + enemy.x, 200, 400);
+  text("人 " + human_attack.x + "  " + enemy.x, 200, 425);
+  text("敵 " + enemy_attack.x + "  " + player.x, 200, 450);
+  text(game_status, 400, 375);
   /* let minS;
   minS = social_button.y - (social_button.h / 2);
   let maxS;
@@ -272,7 +316,7 @@ function drawStatus(entity) {
 
 /** ウィンドウの描画 */
 function drawWindow(){
-  if(game_status == "attack") { 
+  if(game_status == "attack" || game_status == "standby") { 
     if(button_status != "nothing"){
       textSize(30);
       fill(0);
@@ -283,7 +327,7 @@ function drawWindow(){
       textSize(20);
       text("Select your attack", 400, 50);
     }
-  } else if(game_status == "eAttack") {
+  } else if(game_status == "eAttack" || game_status == "standby2") {
     fill(0);
     noStroke();
     textSize(20);
@@ -336,6 +380,7 @@ function resetGame(){
   human_attack = createAttack();
 
   // 敵の種類の用意
+  enemy_attack = createEnemyAttack();
   // (あとで)
 
   //マウスが押された回数numの初期化
@@ -347,6 +392,7 @@ function updateGame(){
   updateAttackPosition(social_attack);
   updateAttackPosition(informatic_attack);
   updateAttackPosition(human_attack);
+  updateEnemyAttackPosition(enemy_attack);
 
 
   // プレイヤーが死んでいたらゲームオーバー状態にする
@@ -371,9 +417,11 @@ function drawGame(){
   drawEnemy(enemy);
 
   // ボタンの描画
+  if(game_status == "select"){
   drawButton(social_button);  // 社会ボタン描画
   drawButton(informatic_button);  // 情報ボタン描画
   drawButton(human_button); // 人間ボタン描画
+  }
 
   // ステータスの描画
   drawStatus(player);
@@ -385,6 +433,7 @@ function drawGame(){
   drawAttack(human_attack);  // 人間攻撃エフェクト描画
 
   // エネミーの攻撃エフェクトの描画
+  drawEnemyAttack(enemy_attack);
   //(あとで)
 
   // ウィンドウの描画
@@ -477,6 +526,7 @@ function mousePressed(){
     resetAttackPosition(social_attack);
     resetAttackPosition(informatic_attack);
     resetAttackPosition(human_attack);
+    resetEnemyAttackPosition(enemy_attack);
     
     if(
       mouseY >= 500 - (30 / 2) &&
