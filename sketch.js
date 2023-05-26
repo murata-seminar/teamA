@@ -231,6 +231,9 @@ let player_attack_power;
 // 敵のプレイヤーへのダメージ量
 let enemy_attack_power;
 
+// updateGame()内の敵の攻撃力更新に使う変数
+let flag;
+
 // タイプのリスト
 const types = ["Social", "Informatic", "Human"];
 
@@ -331,7 +334,7 @@ function drawWindow(){
     fill(0);
     noStroke();
     textSize(20);
-    text("Enemy's attack! Player recieved " + enemy.attack + " damage!", 400, 50);
+    text("Enemy's attack! Player recieved " + enemy_attack_power + " damage!", 400, 50);
   } else if (game_status == "select"){
     fill(0);
     noStroke();
@@ -347,6 +350,9 @@ function drawWindow(){
 function resetGame(){
   // ゲーム状態の初期化
   game_status = "title";
+
+  //flagの初期化
+  flag = true;
 
   //ゲームの初期化時にタイトル画面も初期化する
   resetTitleScreen();
@@ -394,6 +400,16 @@ function updateGame(){
   updateAttackPosition(human_attack);
   updateEnemyAttackPosition(enemy_attack);
 
+  // eAttack状態になるたびに敵の攻撃量を1度だけ更新
+  if(game_status == "eAttack") {
+    if (flag) {
+      enemy_attack_power = Math.floor(Math.random() * 15 + 1);
+      flag = false;
+    }
+  }
+
+  // standby2状態になったらflagをtrueに戻す
+  if(game_status == "standby2") flag = true;
 
   // プレイヤーが死んでいたらゲームオーバー状態にする
   if (player.hp==0) game_status = "gameover";
@@ -468,7 +484,7 @@ function countHpIsZero(){
 
 // プレイヤーのHPの更新
 function updatePlayerHp(){
-  enemy_attack_power = Math.floor(Math.random() * 15 + 1);
+  //enemy_attack_power = Math.floor(Math.random() * 15 + 1);
   //if(game_status == "eAttack"){
     for(let i=0; i<1; i++){
       if(i==0 && player.hp > 0){
