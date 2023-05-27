@@ -150,8 +150,6 @@ function resetEnemyAttackPosition(entity){
 
 
 
-
-
 //----ゲーム全体に関わる部分 ----------------------------------------------
 
 
@@ -174,6 +172,8 @@ let human_button;
 //タイトル画面のスタートボタン
 let start_button;
 
+//タイトル画面のやり方ボタン
+let howtoplay_button;
 
 /**画像 */
 let img; // 勇者
@@ -244,11 +244,6 @@ const human_enemy_names = ["cognitive psycology", "media theory", "workshop desi
 
 
 
-/**タイトル画面の初期化 */
-function resetTitleScreen(){
-  start_button = createButtons("Start", width / 2 , height / 2 + 100, 140, 60);
-  Howtoplay_button = createButtons("How to play",  + width / 2 , height / 2 + 200, 140, 60);
-}
 
 /**タイトル画面の描画 */
 function drawTitleScreen(){
@@ -258,9 +253,24 @@ function drawTitleScreen(){
 
   //スタートボタンの描画
   drawButton(start_button);
-  drawButton(Howtoplay_button);
+
+  //howtoplayボタンの描画
+  drawButton(howtoplay_button);
 }
 
+/**使い方の画面の描画 */
+function drawHowtoplayScreen(){
+  background(0, 192); //透明度 192 の黒
+  fill(255);
+  textSize(100);
+  textAlign(CENTER, CENTER); //横に中央ぞろえ & 縦に中央揃え
+  text('How to play', width / 2, 100);
+  textSize(25);
+  text('社会情報学部の科目が敵で出てきます。', width / 2 , height /2 - 50);
+  text('社会、情報、人間のいずれかの攻撃を使って相手を倒そう！', width / 2, height /2 + 25);
+  text('敵のエリアと自分の攻撃の属性が一致してると倒しやすいかも、、、', width / 2, height /2 + 100);
+  drawButton(return_button);
+}
 
 /** ゲームオーバー画面の描画 */
 function drawGameoverScreen() {
@@ -333,7 +343,7 @@ function drawWindow(){
   } else if(game_status == "eAttack" || game_status == "standby2") {
     fill(0);
     noStroke();
-    textSize(20);
+    textSize(30);
     text("Enemy's attack! Player recieved " + enemy_attack_power + " damage!", 400, 50);
   } else if (game_status == "select"){
     fill(0);
@@ -354,8 +364,10 @@ function resetGame(){
   //flagの初期化
   flag = true;
 
+  /*
   //ゲームの初期化時にタイトル画面も初期化する
   resetTitleScreen();
+  */
 
   // プレイヤーの生成
   player = createPlayer();
@@ -375,6 +387,10 @@ function resetGame(){
   social_button = createButtons("Social", 180, 500, 140, 60);
   informatic_button = createButtons("Informatic", 400, 500, 200, 60);
   human_button = createButtons("Human", 620, 500, 140, 60);
+
+  return_button = createButtons("Return", width / 2 , height / 2 + 250 , 140, 60);
+  start_button = createButtons("Start", width / 2 , height / 2 + 100, 140, 60);
+  howtoplay_button = createButtons("How to play",  width / 2 , height / 2 + 200, 180, 60);
 
   // 社会攻撃エフェクトの生成
   social_attack = createAttack();
@@ -422,6 +438,8 @@ function updateGame(){
 function drawGame(){
   if(game_status === "title"){
     drawTitleScreen();
+  } else if(game_status === "howtoplay"){
+    drawHowtoplayScreen();
   } else if (game_status === "gameover"){
     drawGameoverScreen();
     return;
@@ -503,19 +521,20 @@ function updatePlayerHp(){
 //----setup/draw 他 ------------------------------------------------------
 
 function preload(){
-  img = loadImage("./勇者.png");
-  img2 = loadImage("./緑の開いた本.png");
-  img3 = loadImage("./草原.png");
-  img4 = loadImage("./雷.png");
-  img5 = loadImage("./muramon.png");
-  img6 = loadImage("./火.png");
-  img7 = loadImage("./氷.png");
+  img = loadImage("勇者.png");
+  img2 = loadImage("緑の開いた本.png");
+  img3 = loadImage("草原.png");
+  img4 = loadImage("雷.png");
+  img5 = loadImage("muramon.png");
+  img6 = loadImage("火.png");
+  img7 = loadImage("氷.png");
   soundFile = createAudio("おとぼけダンス.mp3");
   soundFile2 = createAudio("選択音.mp3");
   soundFile3 = createAudio("炎攻撃.mp3");
   soundFile4 = createAudio("雷攻撃.mp3");
   soundFile5 = createAudio("氷攻撃.mp3");
 }
+
 
 function setup() {
   createCanvas(800, 600)
@@ -592,15 +611,28 @@ function mousePressed(){
       soundFile2.play();
     }
     if(
-      mouseX >= howtoplay_button.x - (howtplay_button.w / 2) &&
-      mouseX <= howtoplay_button.x + (howtolay_button.w / 2) &&
+      mouseX >= howtoplay_button.x - (howtoplay_button.w / 2) &&
+      mouseX <= howtoplay_button.x + (howtoplay_button.w / 2) &&
       mouseY >= howtoplay_button.y - (howtoplay_button.h / 2) &&
       mouseY <= howtoplay_button.y + (howtoplay_button.h / 2)
     ){
       // 使い方が押されたら
       game_status = "howtoplay";
+      //選択音
+      soundFile2.play();  
     }
   }
+  if (game_status === "howtoplay") 
+    if(
+      mouseX >= return_button.x - (return_button.w / 2) &&
+      mouseX <= return_button.x + (return_button.w / 2) &&
+      mouseY >= return_button.y - (return_button.h / 2) &&
+      mouseY <= return_button.y + (return_button.h / 2)
+    ){
+      //選択音
+      soundFile2.play(); 
+      resetGame();
+    }
 
   if(game_status == "gameover"){
     // ゲームオーバー状態ならリセット
