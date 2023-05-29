@@ -89,6 +89,7 @@ function drawAttack(entity){
     }
   } else if (game_status == "set") {
     setTimeout(function(){ //1.5秒後にeAttack
+      soundFile6.play(); //敵攻撃の音
       game_status = "eAttack";
     }, 1500);
     game_status = "standby" //ステータスをstandbyに
@@ -126,7 +127,7 @@ function drawEnemyAttack(entity){
       updatePlayerHp();
       button_status = "nothing"; //よくわからないけど必要そうだから入れてます
     } else if(entity.x > player.x) {
-      circle(entity.x, entity.y, 50);
+      image(img8, entity.x, entity.y, 50, 50);
     }
   }
   else if(game_status == "standby2"){
@@ -183,6 +184,7 @@ let img4; // 雷
 let img5; // muramon
 let img6; //火
 let img7; //氷
+let img8; //敵攻撃
 
 /**音 */
 let soundFile; // おとぼけダンス.mp3
@@ -190,6 +192,7 @@ let soundFile2; //選択音.mp3
 let soundFile3;//炎の音.mp3
 let soundFile4;//雷の音.mp3
 let soundFile5;//氷の音.mp3
+let soundFile6;//敵の音.mp3
 
 
 // ボタンのステータス
@@ -301,19 +304,38 @@ function drawClearScreen() {
 /** ステータスの描画 */
 function drawStatus(entity) {
   textSize(25);
+  //fill(0);
+  //text("HP:" + entity.hp, entity.x, 200);
+  stroke(0);
+  strokeWeight(2.5);
   fill(0);
-  text("HP:" + entity.hp, entity.x, 200);
-  text(entity.Name, entity.x, 230);
+  rect(entity.x, 230, 100, 15);
+  rectMode(CORNER);
+  let colorG;
+  if(entity.hp > 65){
+    colorG = 255;
+  }else if(entity.hp > 40){
+    colorG = 175;
+  }else{
+    colorG = 0;
+  }
+  fill(255, colorG, 0);
+  rect(entity.x - 50,222.5, entity.hp, 15);
+  rectMode(CENTER);
+  noStroke();
+  fill(0);
+  text("HP:" + entity.hp, entity.x - 85, 230);
+  text(entity.Name, entity.x, 200);
   text(entity.type, entity.x, 260); // ←デバッグ用　最終的には消す
   //text("社会Lv:" + entity.lv_s + " " + "情報Lv:" + entity.lv_i + " " + "人間Lv:" + entity.lv_h, entity.x, 210);
 
 
   // 以下、確認用
-  text("社 " + social_attack.x + "  " + enemy.x, 200, 375);
+  /*text("社 " + social_attack.x + "  " + enemy.x, 200, 375);
   text("情 " + informatic_attack.x + "  " + enemy.x, 200, 400);
   text("人 " + human_attack.x + "  " + enemy.x, 200, 425);
   text("敵 " + enemy_attack.x + "  " + player.x, 200, 450);
-  text(game_status, 400, 375);
+  text(game_status, 400, 375);*/
   /* let minS;
   minS = social_button.y - (social_button.h / 2);
   let maxS;
@@ -528,11 +550,13 @@ function preload(){
   img5 = loadImage("muramon.png");
   img6 = loadImage("火.png");
   img7 = loadImage("氷.png");
+  img8 = loadImage("敵攻撃.png");
   soundFile = createAudio("おとぼけダンス.mp3");
   soundFile2 = createAudio("選択音.mp3");
   soundFile3 = createAudio("炎攻撃.mp3");
   soundFile4 = createAudio("雷攻撃.mp3");
   soundFile5 = createAudio("氷攻撃.mp3");
+  soundFile6 = createAudio("敵攻撃音.mp3");
 }
 
 
