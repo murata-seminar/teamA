@@ -94,6 +94,9 @@ function drawAttack(entity){
     }, 1500);
     game_status = "standby" //ステータスをstandbyに
   }
+  if(game_status == "standby"){
+    image(img9, entity.x, entity.y, 50, 50);
+  }
 }
 
 // 攻撃エフェクトエンティティの位置の更新
@@ -129,8 +132,8 @@ function drawEnemyAttack(entity){
     } else if(entity.x > player.x) {
       image(img8, entity.x, entity.y, 50, 50);
     }
-  }
-  else if(game_status == "standby2"){
+  } else if(game_status == "standby2"){
+    image(img9, entity.x, entity.y, 50, 50);
     setTimeout(function(){ //1.5秒後にselect
       game_status = "select"; 
     },1500);
@@ -175,6 +178,9 @@ let start_button;
 
 //タイトル画面のやり方ボタン
 let howtoplay_button;
+
+//ゲーム中のタイトルに戻るボタン
+let title_button;
 
 /**画像 */
 let img; // 勇者
@@ -381,7 +387,8 @@ function drawWindow(){
 /** ゲームの初期化 */
 function resetGame(){
   // ゲーム状態の初期化
-  game_status = "title";
+  //game_status = "title";
+  game_status = "select";
 
   //flagの初期化
   flag = true;
@@ -413,6 +420,7 @@ function resetGame(){
   return_button = createButtons("Return", width / 2 , height / 2 + 250 , 140, 60);
   start_button = createButtons("Start", width / 2 , height / 2 + 100, 140, 60);
   howtoplay_button = createButtons("How to play",  width / 2 , height / 2 + 200, 180, 60);
+  title_button = createButtons("return to title", 150, 50, 200, 60);
 
   // 社会攻撃エフェクトの生成
   social_attack = createAttack();
@@ -477,6 +485,7 @@ function drawGame(){
   drawButton(social_button);  // 社会ボタン描画
   drawButton(informatic_button);  // 情報ボタン描画
   drawButton(human_button); // 人間ボタン描画
+  drawButton(title_button); // タイトルボタン描画
   }
 
   // ステータスの描画
@@ -551,6 +560,7 @@ function preload(){
   img6 = loadImage("火.png");
   img7 = loadImage("氷.png");
   img8 = loadImage("敵攻撃.png");
+  img9 = loadImage("bakuhatsu_01.png");
   soundFile = createAudio("おとぼけダンス.mp3");
   soundFile2 = createAudio("選択音.mp3");
   soundFile3 = createAudio("炎攻撃.mp3");
@@ -572,6 +582,7 @@ function setup() {
   soundFile.loop();
   
   resetGame();
+  game_status = "title";
 }
 
 function draw() {
@@ -656,6 +667,19 @@ function mousePressed(){
       //選択音
       soundFile2.play(); 
       resetGame();
+      game_status = "title";
+    }
+    if (game_status === "select") 
+    if(
+      mouseX >= title_button.x - (title_button.w / 2) &&
+      mouseX <= title_button.x + (title_button.w / 2) &&
+      mouseY >= title_button.y - (title_button.h / 2) &&
+      mouseY <= title_button.y + (title_button.h / 2)
+    ){
+      //選択音
+      soundFile2.play(); 
+      resetGame();
+      game_status = "title";
     }
 
   if(game_status == "gameover"){
