@@ -58,7 +58,11 @@ function drawButton(button){
   // rectMode(RADIUS);
   fill(0);
   rect(button.x, button.y, button.w, button.h, 20);
-  textSize(30);
+  if(button == sound_button || button == title_button){
+    textSize(20);
+  } else {
+    textSize(30);
+  }
   fill(220);
   text(button.name, button.x, button.y);
 }
@@ -243,6 +247,12 @@ let enemy_attack_power;
 // updateGame()内の敵の攻撃力更新に使う変数
 let flag;
 
+// 再生ボタン
+let sound_button;
+
+// 再生ボタンの状態
+let sound_button_status;
+
 // タイプのリスト
 const types = ["Social", "Informatic", "Human"];
 
@@ -265,6 +275,9 @@ function drawTitleScreen(){
 
   //howtoplayボタンの描画
   drawButton(howtoplay_button);
+
+  //再生ボタンの描画
+  drawButton(sound_button);
 }
 
 /**使い方の画面の描画 */
@@ -381,6 +394,15 @@ function drawWindow(){
   }
 }
 
+/** 音声を再生するための関数 */
+function playSound(){
+  if(sound_button_status == "on"){
+    soundFile.play();
+  } else {
+    soundFile.stop();
+  }
+}
+
 /** 敵の種類をランダム抽出 */
 // (あとで)
 
@@ -420,7 +442,8 @@ function resetGame(){
   return_button = createButtons("Return", width / 2 , height / 2 + 250 , 140, 60);
   start_button = createButtons("Start", width / 2 , height / 2 + 100, 140, 60);
   howtoplay_button = createButtons("How to play",  width / 2 , height / 2 + 200, 180, 60);
-  title_button = createButtons("return to title", 150, 50, 200, 60);
+  title_button = createButtons("return to title", 150, 50, 140, 40); //タイトルに戻るボタン
+  sound_button = createButtons("sound ON/OFF", 100, 550, 120, 50); // 再生ボタン
 
   // 社会攻撃エフェクトの生成
   social_attack = createAttack();
@@ -437,6 +460,7 @@ function resetGame(){
 
   //マウスが押された回数numの初期化
   num = 0;
+
 }
 
 /** ゲームの更新*/
@@ -579,10 +603,13 @@ function setup() {
   background(220);
 
   game_status = "title";
-  soundFile.loop();
+  //soundFile.loop();
   
   resetGame();
   game_status = "title";
+
+  // 再生ボタン状態の初期化
+  sound_button_status = "off";
 }
 
 function draw() {
@@ -656,8 +683,22 @@ function mousePressed(){
       //選択音
       soundFile2.play();  
     }
+    if(
+      // 再生ボタンが押されたら
+      mouseX >= sound_button.x - (sound_button.w / 2) &&
+      mouseX <= sound_button.x + (sound_button.w / 2) &&
+      mouseY >= sound_button.y - (sound_button.h / 2) &&
+      mouseY <= sound_button.y + (sound_button.h / 2)
+    ){
+      if (sound_button_status == "off"){
+        sound_button_status = "on";
+      } else {
+        sound_button_status = "off";
+      }
+      playSound();
+    }
   }
-  if (game_status === "howtoplay") 
+  if (game_status === "howtoplay") {
     if(
       mouseX >= return_button.x - (return_button.w / 2) &&
       mouseX <= return_button.x + (return_button.w / 2) &&
@@ -669,7 +710,8 @@ function mousePressed(){
       resetGame();
       game_status = "title";
     }
-    if (game_status === "select") 
+  }
+  if (game_status === "select") {
     if(
       mouseX >= title_button.x - (title_button.w / 2) &&
       mouseX <= title_button.x + (title_button.w / 2) &&
@@ -681,6 +723,7 @@ function mousePressed(){
       resetGame();
       game_status = "title";
     }
+  }
 
   if(game_status == "gameover"){
     // ゲームオーバー状態ならリセット
