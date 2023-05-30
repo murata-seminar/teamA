@@ -106,11 +106,39 @@ function drawAttack(entity){
     textSize(36);
     text("-" + player_attack_power, entity.x, entity.y);
   }
+
+  if(game_status == "ball"){ //ゲームステータスがボールの時
+    if(entity.x > enemy.x){
+      muramonGet();
+    }else if(entity.x <= enemy.x){
+      image(img10,entity.x, entity.y, 20,20);
+    }
+  } 
+
+  if (game_status == "set3"){
+    setTimeout(function(){ //1.5秒後にeAttack
+      soundFile6.play(); //敵攻撃の音
+      game_status = "eAttack";
+    }, 1500);
+    game_status = "standby3" //ステータスをstandbyに
+  }
+
+}
+
+//ムラモンゲット
+function muramonGet(){
+  let successRate = 1 - enemy.hp / 100;
+
+  if(random() < successRate){
+    game_status = "clear";
+  }else{
+    game_status = "set3";
+  }
 }
 
 // 攻撃エフェクトエンティティの位置の更新
 function updateAttackPosition(entity){
-  if(game_status == "attack"){
+  if(game_status == "attack" || game_status == "ball"){
     entity.x += entity.vx;
   }
 }
@@ -188,6 +216,9 @@ let informatic_button;
 // 人間ボタン
 let human_button;
 
+//ボールボタン
+let ball_button;
+
 //タイトル画面のスタートボタン
 let start_button;
 
@@ -206,6 +237,7 @@ let img5; // muramon
 let img6; //火
 let img7; //氷
 let img8; //敵攻撃
+let img10; //ボール
 
 /**音 */
 let soundFile; // おとぼけダンス.mp3
@@ -231,6 +263,7 @@ let social_attack; // 社会攻撃エフェクト
 let informatic_attack; // 情報攻撃エフェクト
 let human_attack; // 人間攻撃エフェクト
 let enemy_attack;
+let ball_attack; //ボール攻撃
 
 // ゲーム状態
 let game_status;
@@ -449,6 +482,7 @@ function resetGame(){
   social_button = createButtons("Social", 180, 500, 140, 60);
   informatic_button = createButtons("Informatic", 400, 500, 200, 60);
   human_button = createButtons("Human", 620, 500, 140, 60);
+  ball_button = createButtons("Ball", 400, 425, 120, 40); //ボールのボタン
 
   return_button = createButtons("Return", width / 2 , height / 2 + 250 , 140, 60);
   start_button = createButtons("Start", width / 2 , height / 2 + 100, 140, 60);
@@ -465,6 +499,9 @@ function resetGame(){
   // 人間攻撃エフェクトの生成
   human_attack = createAttack();
 
+  //ボール攻撃エフェクトの生成
+  ball_attack = createAttack();
+
   // 敵の種類の用意
   enemy_attack = createEnemyAttack();
   // (あとで)
@@ -480,6 +517,7 @@ function updateGame(){
   updateAttackPosition(informatic_attack);
   updateAttackPosition(human_attack);
   updateEnemyAttackPosition(enemy_attack);
+  updateAttackPosition(ball_attack);
 
   // eAttack状態になるたびに敵の攻撃量を1度だけ更新
   if(game_status == "eAttack"){
@@ -532,6 +570,7 @@ function drawGame(){
   drawButton(informatic_button);  // 情報ボタン描画
   drawButton(human_button); // 人間ボタン描画
   drawButton(title_button); // タイトルボタン描画
+  drawButton(ball_button); //ボールボタン描画
   }
 
   // ステータスの描画
@@ -546,6 +585,9 @@ function drawGame(){
   // エネミーの攻撃エフェクトの描画
   drawEnemyAttack(enemy_attack);
   //(あとで)
+
+  //ボール攻撃エフェクトの描画
+  drawAttack(ball_attack);
 
   // ウィンドウの描画
   drawWindow();
@@ -607,6 +649,7 @@ function preload(){
   img7 = loadImage("氷.png");
   img8 = loadImage("敵攻撃.png");
   img9 = loadImage("bakuhatsu_01.png");
+  img10 = loadImage("ボール.png");
   soundFile = createAudio("おとぼけダンス.mp3");
   soundFile2 = createAudio("選択音.mp3");
   soundFile3 = createAudio("炎攻撃.mp3");
@@ -647,6 +690,7 @@ function mousePressed(){
     resetAttackPosition(informatic_attack);
     resetAttackPosition(human_attack);
     resetEnemyAttackPosition(enemy_attack);
+    resetAttackPosition(ball_attack);
     
     if(
       mouseY >= 500 - (60 / 2) &&
@@ -679,6 +723,19 @@ function mousePressed(){
           button_status = "nothing";
         }
       game_status = "attack";
+      countHpIsZero();
+    }
+
+    if(
+      mouseY >= 405 &&
+      mouseY <= 445 &&
+      mouseX >= 340 &&
+      mouseX <= 460
+    ){
+      //button_status = "Ball";
+      attacks = ball_attack;
+      soundFile2.play();//選択音
+      game_status = "ball"; //ボール
       countHpIsZero();
     }
   }
