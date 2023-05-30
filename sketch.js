@@ -209,11 +209,12 @@ let img8; //敵攻撃
 
 /**音 */
 let soundFile; // おとぼけダンス.mp3
-let soundFile2; //選択音.mp3
-let soundFile3;//炎の音.mp3
-let soundFile4;//雷の音.mp3
-let soundFile5;//氷の音.mp3
-let soundFile6;//敵の音.mp3
+let soundFile2; // 選択音.mp3
+let soundFile3; // 炎の音.mp3
+let soundFile4; // 雷の音.mp3
+let soundFile5; // 氷の音.mp3
+let soundFile6; // 敵の音.mp3
+let soundFile7; // 軽いキック1.mp3
 
 
 // ボタンのステータス
@@ -257,6 +258,9 @@ let enemy_attack_power;
 
 // updateGame()内の敵の攻撃力更新に使う変数
 let flag;
+
+// 衝突音を出すのに使う変数
+let flag2;
 
 // 再生ボタン
 let sound_button;
@@ -416,8 +420,6 @@ function playSound(){
   }
 }
 
-/** 敵の種類をランダム抽出 */
-// (あとで)
 
 /** ゲームの初期化 */
 function resetGame(){
@@ -427,11 +429,7 @@ function resetGame(){
 
   //flagの初期化
   flag = true;
-
-  /*
-  //ゲームの初期化時にタイトル画面も初期化する
-  resetTitleScreen();
-  */
+  flag2 = false;
 
   // プレイヤーの生成
   player = createPlayer();
@@ -484,10 +482,21 @@ function updateGame(){
   updateEnemyAttackPosition(enemy_attack);
 
   // eAttack状態になるたびに敵の攻撃量を1度だけ更新
-  if(game_status == "eAttack") {
+  if(game_status == "eAttack"){
     if (flag) {
       enemy_attack_power = Math.floor(Math.random() * 15 + 1);
       flag = false;
+    }
+  }
+
+  if(game_status =="attack" || game_status == "eAttack"){
+    flag2 = true;
+  }
+  if(game_status == "standby" || game_status == "standby2"){
+    // flag2 = true;
+    if(flag2){
+      soundFile7.play();
+      flag2 = false;
     }
   }
 
@@ -604,6 +613,7 @@ function preload(){
   soundFile4 = createAudio("雷攻撃.mp3");
   soundFile5 = createAudio("氷攻撃.mp3");
   soundFile6 = createAudio("敵攻撃音.mp3");
+  soundFile7 = createAudio("軽いキック1.mp3");
 }
 
 
