@@ -356,11 +356,12 @@ function drawStatus(entity) {
   fill(0);
   text("HP:" + entity.hp, entity.x - 85, 230);
   text(entity.Name, entity.x, 200);
-  text(entity.type, entity.x, 260); // ←デバッグ用　最終的には消す
-  //text("社会Lv:" + entity.lv_s + " " + "情報Lv:" + entity.lv_i + " " + "人間Lv:" + entity.lv_h, entity.x, 210);
+  // text(entity.type, entity.x, 260); // ←デバッグ用　最終的には消す
+  // text("社会Lv:" + entity.lv_s + " " + "情報Lv:" + entity.lv_i + " " + "人間Lv:" + entity.lv_h, entity.x, 210);
 
 
   // 以下、確認用
+  // text(sound_button_status, 400, 300);
   /*text("社 " + social_attack.x + "  " + enemy.x, 200, 375);
   text("情 " + informatic_attack.x + "  " + enemy.x, 200, 400);
   text("人 " + human_attack.x + "  " + enemy.x, 200, 425);
@@ -409,7 +410,7 @@ function drawWindow(){
 /** 音声を再生するための関数 */
 function playSound(){
   if(sound_button_status == "on"){
-    soundFile.play();
+    soundFile.loop();
   } else {
     soundFile.stop();
   }
@@ -638,8 +639,8 @@ function mousePressed(){
     resetEnemyAttackPosition(enemy_attack);
     
     if(
-      mouseY >= 500 - (30 / 2) &&
-      mouseY <= 500 + (30 / 2)){
+      mouseY >= 500 - (60 / 2) &&
+      mouseY <= 500 + (60 / 2)){
         if(
         mouseX >= social_button.x - (social_button.w / 2) && mouseX <= social_button.x + (social_button.w / 2) 
         ){
