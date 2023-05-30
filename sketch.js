@@ -391,8 +391,8 @@ function drawWindow(){
     } else {
       fill(0);
       noStroke();
-      textSize(20);
-      text("Select your attack", 400, 50);
+      textSize(24);
+      text("Select your attack", 400, 325);
     }
   } else if(game_status == "eAttack" || game_status == "standby2") {
     fill(0);
@@ -402,8 +402,8 @@ function drawWindow(){
   } else if (game_status == "select"){
     fill(0);
     noStroke();
-    textSize(20);
-    text("Select your attack", 400, 50);
+    textSize(24);
+    text("Select your attack", 400, 325);
   }
 }
 
