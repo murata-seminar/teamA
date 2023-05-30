@@ -450,6 +450,12 @@ function drawWindow(){
     textSize(24);
     text("Select your attack", 400, 325);
   }
+  else if(game_status == "ball" || game_status == "standby3"){
+    fill(0);
+    noStroke();
+    textSize(30);
+    text("Go! MURAMON Ball!", 400, 50);
+  }
 }
 
 /** 音声を再生するための関数 */
