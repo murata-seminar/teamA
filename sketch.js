@@ -130,6 +130,7 @@ function muramonGet(){
   let successRate = 1 - enemy.hp / 100;
 
   if(random() < successRate){
+    get_status = "get";
     game_status = "clear";
   }else{
     game_status = "set3";
@@ -267,6 +268,9 @@ let ball_attack; //ボール攻撃
 
 // ゲーム状態
 let game_status;
+
+//muramonget状態
+let get_status = "nomal";
 /**
  * 今のところ"title"（タイトル画面）か "select"(選択中) か 
  * "attack" (プレイヤーの攻撃中) か "eAttack"(エネミーの攻撃中) か
@@ -361,7 +365,11 @@ function drawClearScreen() {
   strokeWeight(5);
   stroke(0, 100, 250);
   textSize(64);
+  if(get_status == "get"){
+    text("MURAMON Get!",  width / 2, height / 2);
+  }else{
   text("You Win!", width / 2, height / 2);  // 画面中央にテキスト表示
+  }
   textSize(25);
   noStroke();
   text("Click to retry!", width / 2, height / 2 + 100);  // 画面中央にテキスト表示
