@@ -135,21 +135,23 @@ function createEnemyAttack(){
 function drawEnemyAttack(entity){
   if(game_status == "eAttack"){
     if(entity.x <= player.x){
-      game_status = "standby2"
+      game_status = "set2"
       updatePlayerHp();
       button_status = "nothing"; //よくわからないけど必要そうだから入れてます
     } else if(entity.x > player.x) {
       image(img8, entity.x, entity.y, 50, 50);
     }
-  } else if(game_status == "standby2"){
+  } else if(game_status == "set2"){
+    setTimeout(function(){ //1.5秒後にselect
+      game_status = "select"; 
+    },1500);
+    game_status = "standby2";
+  }else if(game_status == "standby2"){
     image(img9, entity.x, entity.y, 50, 50);
     textSize(36);
     stroke(255);
     strokeWeight(3);
     text("-" + enemy_attack_power, entity.x, entity.y);
-    setTimeout(function(){ //1.5秒後にselect
-      game_status = "select"; 
-    },1500);
   }
 }
 
@@ -359,11 +361,11 @@ function drawStatus(entity) {
 
 
   // 以下、確認用
-  text("社 " + social_attack.x + "  " + enemy.x, 200, 375);
+  /*text("社 " + social_attack.x + "  " + enemy.x, 200, 375);
   text("情 " + informatic_attack.x + "  " + enemy.x, 200, 400);
   text("人 " + human_attack.x + "  " + enemy.x, 200, 425);
   text("敵 " + enemy_attack.x + "  " + player.x, 200, 450);
-  text(game_status, 400, 375);
+  text(game_status, 400, 375);*/
   /* let minS;
   minS = social_button.y - (social_button.h / 2);
   let maxS;
